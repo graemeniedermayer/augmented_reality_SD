@@ -2,7 +2,7 @@
 Combining augmented reality and stability diffusion through api calls.
 
 ## Examples
-[video](https://img.youtube.com/vi/_ZFlGsJHMhw/0.jpg)](https://youtu.be/_ZFlGsJHMhw)
+[![video](https://img.youtube.com/vi/_ZFlGsJHMhw/0.jpg)](https://youtu.be/_ZFlGsJHMhw)
 
 ## Installation
 
