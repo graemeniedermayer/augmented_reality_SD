@@ -1,21 +1,30 @@
 # Augmented Reality and Stable Diffusion
 Combining augmented reality and stability diffusion through api calls.
 
+## Examples
+[video](https://img.youtube.com/vi/_ZFlGsJHMhw/0.jpg)](https://youtu.be/_ZFlGsJHMhw)
+
 ## Installation
+
 ### local backend setup
 #### do on local computer
 `git clone https://github.com/graemeniedermayer/augmented_reality_SD.git`
 
 launch automatic1111 with api option
+
 `python launch.py --xformers --api`
 
-launch proxy pass server with your private ip address
+launch proxy pass server with your private ip address. This can be found with `ip address` linux, `ifconfig` apple or `ipconfig` windows.
+
 `python proxy_pass_server.py --ip 192.168.0.1`
 
 ##### optional 
 you may want to remake the ssl keys. This is critical if your local network is unsecure for some reason.
+
 `sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout secured-selfsigned.key -out secured-selfsigned.crt`
+
 than change the final lines of proxy_pass_server.py to
+
 `ssl_keyfile='ssl/secured-selfsigned.key',mssl_certfile='ssl/secured-selfsigned.crt'`
 
 `secured-selfsigned.key` is the private key keep it safe.
@@ -32,6 +41,11 @@ to do. mozilla webxr mobile viewer might work for some setups (sort of doubt tha
 
 ### colab setup
 To do
+
+## Using extensions
+Many extensions can be very helpful while using augmented reality.
+
+Use full name that would appear in the script area.
 
 ## Updates
 v 0.0.1 boilerplate
@@ -52,6 +66,7 @@ So far automatic1111 [put link here] is the only backend. I'd like to look into 
 
 # Useful extensions
 depth
+background removal
 
 # Acknowledgements 
 So many.

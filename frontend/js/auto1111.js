@@ -370,7 +370,7 @@ params = {
     denoising_strength:0.89,
     scriptname:"remove_bg v0.0.2"
 }
-// scriptname will cause issues if empty
+// :"remove_bg v0.0.2"
 guiSystem.add(params,"prompt").onChange(()=>{})
 guiSystem.add(params,"negative_prompt").onChange(()=>{})
 guiSystem.add(params,"steps",0, 50).onChange(()=>{})
@@ -438,9 +438,11 @@ var obj2 = { add:function(){
         'width': params.width,
         'height': params.height, 
         'denoising_strength': params.denoising_strength, 
-        // 'script_name': params.scriptname
+        
         // 'mask_blur': 2
     }
+    if(params.scriptname!=''):
+        dic['script_name'] = params.scriptname
 	fetch(url, 
         {
             method: 'POST',
@@ -454,6 +456,7 @@ var obj2 = { add:function(){
     )
     .then((response) => response.json())
     .then((data)=>{
+        let index = params.scriptname=='' ? 0 : 1
         resData = data
         dataUrl = `data:text/plain;base64,${data.images[0]}`
         const myImage = new Image(canvasSize.width, canvasSize.height);
