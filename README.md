@@ -12,17 +12,23 @@ launch automatic1111 with api option
 launch proxy pass server with your private ip address
 `python proxy_pass_server.py --ip 192.168.0.1`
 
-optional: you may want to remake the ssl keys. This is critical if your local network is unsecure for some reason.
+##### optional 
+you may want to remake the ssl keys. This is critical if your local network is unsecure for some reason.
 `sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout secured-selfsigned.key -out secured-selfsigned.crt`
+than change the final lines of proxy_pass_server.py to
+`ssl_keyfile='ssl/secured-selfsigned.key',mssl_certfile='ssl/secured-selfsigned.crt'`
 
-`secured-selfsigned.key` is the private key.
+`secured-selfsigned.key` is the private key keep it safe.
 
-#### do on mobile phone
+#### do on android phone
 launch webapp [cite]
 
 first go to `https://192.168.0.1:8443` (using correct private ip address).
 
 web browser should complain about using an inapproriate certificate. Allow the certificate. This should temporarily allow the self-signed certificate for all browser requests.
+
+#### do on iOs phone
+to do. mozilla webxr mobile viewer might work for some setups (sort of doubt that depth api or camera access will work)
 
 ### colab setup
 To do
