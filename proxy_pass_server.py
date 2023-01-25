@@ -6,15 +6,25 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from fastapi import FastAPI
 from starlette.requests import Request
+import argparse
 
 app = FastAPI()
+
+# parser
+parser = argparse.ArgumentParser(description='starting a proxy pass for automatic1111')
+parser.add_argument('-ip', '--ip', default='192.168.0.1', type=str, help='local ip address')
+parser.add_argument('-cors', '--cors_origin', type=str, default='https://graemeniedermayer.github.io', help='cors origin')
+parser.add_argument('-b', '--backend', type=str, default="http://127.0.0.1:7860/", help='backend for ')
+
+args = parser.parse_args()
 
 # Cross-Origin Resource Sharing Flags
 # These flags allow resource from multiple origins to be used.
 
 # Point this to the webxr website origin.
 origins = [
-    "https://"]
+    args.indir
+    ]
 
 app.add_middleware(
     CORSMiddleware,
@@ -46,24 +56,11 @@ async def _reverse_proxy(request: Request):
 
 from pathlib import Path
 
-# check for ssl keys and create if they don't exist
-# if not (Path("fast-selfsigned.key").is_file() and Path("fast-selfsigned.crt").is_file()):
-#     # generate ssl certificates
-#     from Cryptodome.PublicKey import RSA
-#     key = RSA.generate(2048)
-#     pv_key_string = key.exportKey()
-#     with open ("fast-selfsigned.key", "w") as prv_file:
-#         print("{}".format(pv_key_string.decode()), file=prv_file)
-
-#     pb_key_string = key.publickey().exportKey()
-#     with open ("fast-selfsigned.crt", "w") as pub_file:
-#         print("{}".format(pb_key_string.decode()), file=pub_file)
-
 app.add_route("/{path:path}",
               _reverse_proxy, ["GET", "POST", "OPTIONS"])
 if __name__ == '__main__':
     uvicorn.run(
-        'proxy_pass:app', port=8443, host='192.168.0.1',
+        'proxy_pass_server:app', port=8443, host=args.ip,
         reload=True, reload_dirs=['./'],
-        ssl_keyfile='fast-selfsigned.key',
-        ssl_certfile='fast-selfsigned.crt')
+        ssl_keyfile='ssl/unsecure-selfsigned.key',
+        ssl_certfile='ssl/unsecure-selfsigned.crt')
