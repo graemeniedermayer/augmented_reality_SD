@@ -10,7 +10,7 @@ Combining augmented reality and stability diffusion through api calls.
 #### do on local computer
 `git clone https://github.com/graemeniedermayer/augmented_reality_SD.git`
 
-launch automatic1111 with api option
+launch automatic1111 with api option (currently it's only setup of 512 models)
 
 `python launch.py --xformers --api`
 
@@ -30,11 +30,13 @@ than change the final lines of proxy_pass_server.py to
 `secured-selfsigned.key` is the private key keep it safe.
 
 #### do on android phone
-launch webapp [cite]
+launch webapp [cite] in portrait mode (I haven't done all the corrections for landscape mode.)
 
 first go to `https://192.168.0.1:8443` (using correct private ip address).
 
 web browser should complain about using an inapproriate certificate. Allow the certificate. This should temporarily allow the self-signed certificate for all browser requests.
+
+`auto1111.html` will contain the default setting. There are going to be a bunch of variants and we'll figure out what works best!
 
 #### do on iOs phone
 to do. mozilla webxr mobile viewer might work for some setups (sort of doubt that depth api or camera access will work)

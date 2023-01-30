@@ -23,7 +23,7 @@ args = parser.parse_args()
 
 # Point this to the webxr website origin.
 origins = [
-    args.indir
+    args.cors_origin
     ]
 
 app.add_middleware(

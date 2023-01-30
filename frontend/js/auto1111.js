@@ -1,5 +1,7 @@
 // okay so I know global are bad practice but this is experimental oookay?
-let scene, renderer, light, cameraCopy, camera;
+
+// upgrade to jsm
+let scene, renderer, cameraCopy, camera, params;
 let gl, shaderMaterial, glBinding, shaderProgram, mesh; 
       // XR globals.
     
@@ -63,7 +65,7 @@ function init(){
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera( 80, window.innerWidth / window.innerHeight, 0.001, 20 );
   // var particles = 20*10*150;
-  light = new THREE.PointLight( 0xffffff,1.5 );
+  let light = new THREE.PointLight( 0xffffff,1.5 );
   light.decay = 1
   light.distance = 30;
   light.position.x = 0
@@ -323,6 +325,13 @@ function onXRFrame(t, frame) {
 				tCtx.translate(0, canvasSize.height);
 				tCtx.scale(1,-1);
                 tCtx.drawImage(camCanvas,0,0);
+
+                // this is non-ideal.
+                if (params.horizontal){
+                    tCtx.translate(canvasSize.height/2, canvasSize.width/2);
+                    tCtx.rotate(Math.PI/2)
+                    tCtx.translate(-canvasSize.width/2, -canvasSize.height/2);
+                }
                 
                 origImages.push(tempCanvas.toDataURL("image/png"))
 
@@ -379,10 +388,11 @@ guiSystem.add(params,"cfg_scale",0, 20).onChange(()=>{})
 guiSystem.add(params,"seed",-1, 200000).onChange(()=>{})
 guiSystem.add(params,"width",512, 2048, 32).onChange(()=>{})
 guiSystem.add(params,"height",512, 2048, 32).onChange(()=>{})
+guiSystem.add(params,"horizontal", false).onChange(()=>{})
 guiSystem.add(params,"denoising_strength",0.0, 1.0).onChange(()=>{})
 guiSystem.add(params,"scriptname").onChange(()=>{})
 
-var obj1 = { add:function(){ 
+var capture_depth = { add:function(){ 
     captureClick = true;
 }};
 
@@ -417,8 +427,8 @@ depth_args ={
      'gen_normal':false,
 }
 
-guiSystem.add(obj1,'add').name('capture depth');
-var obj2 = { add:function(){
+guiSystem.add(capture_depth,'add').name('capture depth');
+var generate = { add:function(){
     let lastOrigImage = origImages[origImages.length - 1]
 	// document.getElementById('channelSubmit').style.display = 'none';
 	// promptName.style.display = 'none';
@@ -466,6 +476,13 @@ var obj2 = { add:function(){
         canvas.height = canvasSize.height
         const ctx = canvas.getContext("2d");
         myImage.onload = () => {
+
+            if (params.horizontal){
+                tCtx.translate(canvasSize.height/2, canvasSize.width/2);
+                tCtx.rotate(-Math.PI/2)
+                tCtx.translate(-canvasSize.width/2, -canvasSize.height/2);
+            }
+
             ctx.translate(0, canvasSize.height);
             ctx.scale(1,-1);
             ctx.drawImage(myImage, 0, 0);
@@ -492,4 +509,35 @@ var obj2 = { add:function(){
         }
 	})
 }};
-guiSystem.add(obj2,'add').name('generate');
+guiSystem.add(generate,'add').name('generate');
+
+
+// Instantiate a exporter
+const exporter = new THREE.GLTFExporter();
+
+function saveString( text, filename ) {
+    save( new Blob( [ text ], { type: 'text/plain' } ), filename );
+}
+
+// Parse the input and generate the glTF output
+var save_scene = { add:function(){
+    exporter.parse(
+    	scene,
+    	// called when the gltf has been generated
+    	function ( result ) {
+            const output = JSON.stringify( result, null, 2 );
+            console.log( output );
+            saveString( output, params.prompt+'_scene.gltf'.replaceAll(' ','_') );
+    	},
+    	// called when there is an error in the generation
+    	function ( error ) {
+
+    		console.log( 'An error happened' );
+
+    	},
+    	options
+    );
+}
+}
+
+guiSystem.add(save_scene,'add').name('save scene');
