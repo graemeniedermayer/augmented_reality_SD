@@ -38,7 +38,7 @@ app.add_middleware(
 import httpx
 
 #pointing to Automatic1111
-client = httpx.AsyncClient(base_url="http://127.0.0.1:7860/", timeout=None)
+client = httpx.AsyncClient(base_url=args.backend, timeout=None)
 
 async def _reverse_proxy(request: Request):
     url = httpx.URL(path=request.url.path,

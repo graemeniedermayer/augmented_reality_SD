@@ -30,7 +30,7 @@ than change the final lines of proxy_pass_server.py to
 `secured-selfsigned.key` is the private key keep it safe.
 
 #### do on android phone
-launch webapp [cite] in portrait mode (I haven't done all the corrections for landscape mode.)
+launch [webapp](https://graemeniedermayer.github.io/augmented_reality_SD/frontend/auto1111.html) in portrait mode (I haven't done all the corrections for landscape mode.)
 
 first go to `https://192.168.0.1:8443` (using correct private ip address).
 
@@ -41,7 +41,8 @@ web browser should complain about using an inapproriate certificate. Allow the c
 #### do on iOs phone
 to do. mozilla webxr mobile viewer might work for some setups (sort of doubt that depth api or camera access will work)
 
-### colab setup
+### Cloud Backend
+#### google colab
 To do
 
 ## Using extensions
@@ -66,9 +67,15 @@ Using a fastapi proxy pass for SSL and cross-site origin resources (CORS) header
 ### Backend
 So far automatic1111 [put link here] is the only backend. I'd like to look into invokeAI and other possible backends.
 
+# Known bugs
+* horizontal images does not work.
+* must double click capture depth (this is a weird error).
+* there is no failure capturing/error capture.
+
 # Useful extensions
-depth
-background removal
+[depthmaps](https://github.com/thygate/stable-diffusion-webui-depthmap-script)
+[background removal]()
 
 # Acknowledgements 
 So many.
+To do
