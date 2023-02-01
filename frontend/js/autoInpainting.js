@@ -416,6 +416,9 @@ params = {
     steps:25,
     sampler_name:'Euler a',
     cfg_scale:7,
+    inpainting_mask_invert:0,
+    inpainting_fill:1,
+    mask_blur:2,
     seed:-1,
     width:512,
     height:1024,
@@ -428,6 +431,9 @@ guiSystem.add(params,"negative_prompt").onChange(()=>{})
 guiSystem.add(params,"steps",0, 50).onChange(()=>{})
 guiSystem.add(params,"sampler_name").onChange(()=>{})
 guiSystem.add(params,"cfg_scale",0, 20).onChange(()=>{})
+guiSystem.add(params,"inpainting_mask_invert", 0, 1).onChange(()=>{})
+guiSystem.add(params,"inpainting_fill", 0, 2).onChange(()=>{})
+guiSystem.add(params,"mask_blur", 0, 8).onChange(()=>{})
 guiSystem.add(params,"seed",-1, 200000).onChange(()=>{})
 guiSystem.add(params,"width",512, 2048, 32).onChange(()=>{})
 guiSystem.add(params,"height",512, 2048, 32).onChange(()=>{})
@@ -472,18 +478,19 @@ depth_args ={
 guiSystem.add(obj1,'add').name('capture depth');
 var obj2 = { add:function(){
     let lastOrigImage = origImages[origImages.length - 1]
+    let lastMask = masks[origImages.length - 1]
 	// document.getElementById('channelSubmit').style.display = 'none';
 	// promptName.style.display = 'none';
     // include datagui...
     url = 'https://192.168.0.28:443/sdapi/v1/img2img'
     dic = {
         "init_images": [lastOrigImage],
-        // 'mask': lastMask,
+        'mask': lastMask,
         'prompt': params.prompt,
         'negative_prompt': params.negative_prompt,
         'steps': params.steps,
-        // 'inpainting_mask_invert':0,
-        // 'inpainting_fill':1,
+        'inpainting_mask_invert':params.inpainting_mask_invert,
+        'inpainting_fill':params.inpainting_fill,
         'sampler_name': params.sampler_name, 
         'cfg_scale': params.cfg_scale, 
         'seed': params.seed, 
@@ -491,7 +498,7 @@ var obj2 = { add:function(){
         'height': params.height, 
         'denoising_strength': params.denoising_strength, 
         'script_name': params.scriptname
-        // 'mask_blur': 2
+        'mask_blur': params.mask_blur
     }
 	fetch(url, 
         {
@@ -515,23 +522,30 @@ var obj2 = { add:function(){
         canvas.height = canvasSize.height
         const ctx = canvas.getContext("2d");
         myImage.onload = () => {
-            ctx.translate(0, canvasSize.height);
-            ctx.scale(1,-1);
+            // why because canvas math is magic.
+            ctx.translate(canvasSize.height/2, canvasSize.width/2);
+            ctx.rotate(Math.PI/2)
+            ctx.translate(canvasSize.width/2, -canvasSize.height/2);
+
+            ctx.translate( canvasSize.width, canvasSize.height);
+            ctx.scale(-2,-0.5);
             ctx.drawImage(myImage, 0, 0);
+
+            if (params.horizontal){
+                tCtx.translate(canvasSize.height/2, canvasSize.width/2);
+                tCtx.rotate(-Math.PI/2)
+                tCtx.translate(-canvasSize.width/2, -canvasSize.height/2);
+            }
+
             imageData = ctx.getImageData(0, 0, canvasSize.width, canvasSize.height);
             mesh.visible = false
             let mesh1 = new THREE.Mesh( mesh.geometry.clone(), new THREE.ShaderMaterial() );
-	    	mesh1.material = new THREE.ShaderMaterial( { 
+	    	let canTexture = new THREE.CanvasTexture(canvas) 
+            mesh1.material = new THREE.MeshStandardMaterial( { 
                 side: 2,
-	    		uniforms : {
-	    			uSampler: { value: new THREE.DataTexture(imageData, canvasSize.width, canvasSize.height) },
-	    			coordTrans: {value:{
-	    				x:1/canvasSize.width,
-	    				y:1/canvasSize.height
-	    			}}
-	    		},
-	    		vertexShader:  document.getElementById( 'vertexShader' ).textContent,
-	    		fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
+                map: canTexture,
+                // alpha map uses green channel so this is improper...
+                // alphaMap: canTexture
 	    	} )
         
 	    	mesh1.quaternion.copy(cameraCopy.quaternion)

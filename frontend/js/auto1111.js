@@ -476,30 +476,24 @@ var generate = { add:function(){
         canvas.height = canvasSize.height
         const ctx = canvas.getContext("2d");
         myImage.onload = () => {
+            // why because canvas math is magic.
+            ctx.translate(canvasSize.height/2, canvasSize.width/2);
+            ctx.rotate(Math.PI/2)
+            ctx.translate(canvasSize.width/2, -canvasSize.height/2);
 
-            if (params.horizontal){
-                tCtx.translate(canvasSize.height/2, canvasSize.width/2);
-                tCtx.rotate(-Math.PI/2)
-                tCtx.translate(-canvasSize.width/2, -canvasSize.height/2);
-            }
-
-            ctx.translate(0, canvasSize.height);
-            ctx.scale(1,-1);
+            ctx.translate( canvasSize.width, canvasSize.height);
+            ctx.scale(-2,-0.5);
             ctx.drawImage(myImage, 0, 0);
+
             imageData = ctx.getImageData(0, 0, canvasSize.width, canvasSize.height);
             mesh.visible = false
             let mesh1 = new THREE.Mesh( mesh.geometry.clone(), new THREE.ShaderMaterial() );
-	    	mesh1.material = new THREE.ShaderMaterial( { 
+	    	let canTexture = new THREE.CanvasTexture(canvas) 
+            mesh1.material = new THREE.MeshStandardMaterial( { 
                 side: 2,
-	    		uniforms : {
-	    			uSampler: { value: new THREE.DataTexture(imageData, canvasSize.width, canvasSize.height) },
-	    			coordTrans: {value:{
-	    				x:1/canvasSize.width,
-	    				y:1/canvasSize.height
-	    			}}
-	    		},
-	    		vertexShader:  document.getElementById( 'vertexShader' ).textContent,
-	    		fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
+                map: canTexture,
+                // alpha map uses green channel so this is improper...
+                // alphaMap: canTexture
 	    	} )
         
 	    	mesh1.quaternion.copy(cameraCopy.quaternion)
