@@ -342,44 +342,47 @@ function onXRFrame(t, frame) {
 					i+= 2
 
 				}
-                let imageData = ctxCamera.getImageData(0, 0, canvasSize.width, canvasSize.height).data
-        
-				mesh = new THREE.Mesh( geometry, new THREE.ShaderMaterial() );
-                let imageTexture = new THREE.DataTexture(imageData, canvasSize.width, canvasSize.height)
-				mesh.material = new THREE.ShaderMaterial( { 
-					uniforms : {
-						uSampler: { value: imageTexture },
-						coordTrans: {value:{
-							x:1/canvasSize.width,
-							y:1/canvasSize.height
-						}}
-					},
-					vertexShader:  document.getElementById( 'vertexShader' ).textContent,
-					fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
-				} )
-				cameraCopy = new THREE.Group()
-
-				cameraCopy.quaternion.copy(camera.quaternion)
-				cameraCopy.position.copy(camera.position)
-				mesh.quaternion.copy(camera.quaternion)
-				mesh.position.copy(camera.position)
-				mesh.rotateZ(3*Math.PI/2)
-                meshs.push(mesh)
-                // createCanvas...
-                var tempCanvas = document.createElement("canvas"),
-                tCtx = tempCanvas.getContext("2d");
-        
-                tempCanvas.width = canvasSize.width;
-                tempCanvas.height = canvasSize.height;
-        
-				tCtx.translate(0, canvasSize.height);
-				tCtx.scale(1,-1);
-                tCtx.drawImage(camCanvas,0,0);
+                // something is quick async
+                setTimeout( ()=>{
+                    let imageData = ctxCamera.getImageData(0, 0, canvasSize.width, canvasSize.height).data
                 
-                origImages.push(tempCanvas.toDataURL("image/png"))
+			    	mesh = new THREE.Mesh( geometry, new THREE.ShaderMaterial() );
+                    let imageTexture = new THREE.DataTexture(imageData, canvasSize.width, canvasSize.height)
+			    	mesh.material = new THREE.ShaderMaterial( { 
+			    		uniforms : {
+			    			uSampler: { value: imageTexture },
+			    			coordTrans: {value:{
+			    				x:1/canvasSize.width,
+			    				y:1/canvasSize.height
+			    			}}
+			    		},
+			    		vertexShader:  document.getElementById( 'vertexShader' ).textContent,
+			    		fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
+			    	} )
+			    	cameraCopy = new THREE.Group()
 
-				// mesh.material.wireframe = true
-				scene.add( mesh );
+			    	cameraCopy.quaternion.copy(camera.quaternion)
+			    	cameraCopy.position.copy(camera.position)
+			    	mesh.quaternion.copy(camera.quaternion)
+			    	mesh.position.copy(camera.position)
+			    	mesh.rotateZ(3*Math.PI/2)
+                    meshs.push(mesh)
+                    // createCanvas...
+                    var tempCanvas = document.createElement("canvas"),
+                    tCtx = tempCanvas.getContext("2d");
+                
+                    tempCanvas.width = canvasSize.width;
+                    tempCanvas.height = canvasSize.height;
+                
+			    	tCtx.translate(0, canvasSize.height);
+			    	tCtx.scale(1,-1);
+                    tCtx.drawImage(camCanvas,0,0);
+
+                    origImages.push(tempCanvas.toDataURL("image/png"))
+
+			    	// mesh.material.wireframe = true
+			    	scene.add( mesh );
+                },0)
                 
             } else {
               console.log('unavailable')

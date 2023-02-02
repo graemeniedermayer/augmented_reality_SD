@@ -19,6 +19,26 @@
 	</head>
   <body>
 
+    <script id="vertexShader" type="x-shader/x-vertex">
+		attribute vec4 aVertexPosition;
+		varying vec2 vUv;
+		void main(void) {
+		  gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+		  vUv = uv.yx;
+		  }
+	   
+	  </script>
+	  <script id="fragmentShader" type="x-shader/x-fragment">
+		uniform sampler2D uSampler;
+		uniform vec2 coordTrans;
+		varying vec2 vUv;
+		void main(void) {
+		  vec2 coord = vec2(1.0,-1.0) * vUv + vec2(0.0,1.0);
+		  vec4 col = texture2D(uSampler, coord);
+		  gl_FragColor.rgba = col.rgba;
+		}
+		  
+	  </script>  
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://unpkg.com/three@0.128.0/examples/js/exporters/GLTFExporter.js"></script>
