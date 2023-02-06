@@ -20,17 +20,6 @@ launch proxy pass server from the project root directory.
 
 once these two server are running you should be able to go to the (webapp)[https://graemeniedermayer.github.io/augmented_reality_SD/frontend/auto1111.html] and start using it immediately. You can also host this webxr app independently.
 
-##### optional 
-you may want to remake the ssl keys. This is critical if your local network is unsecure for some reason.
-
-`sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout secured-selfsigned.key -out secured-selfsigned.crt`
-
-than change the final lines of proxy_pass_server.py to
-
-`ssl_keyfile='ssl/secured-selfsigned.key',mssl_certfile='ssl/secured-selfsigned.crt'`
-
-`secured-selfsigned.key` is the private key keep it safe.
-
 #### do on android phone
 launch [webapp](https://graemeniedermayer.github.io/augmented_reality_SD/frontend/auto1111.html) in portrait mode (I haven't done all the corrections for landscape mode.)
 
