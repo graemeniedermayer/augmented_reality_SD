@@ -14,9 +14,9 @@ launch automatic1111 with api option (currently it's only setup of 512 models)
 
 `python launch.py --xformers --api`
 
-launch proxy pass server with your private ip address. This can be found with `ip address` linux, `ifconfig` apple or `ipconfig` windows.
+launch proxy pass server from the project root directory.
 
-`python proxy_pass_server.py --ip 192.168.0.1`
+`python proxy_pass_server.py`
 
 ##### optional 
 you may want to remake the ssl keys. This is critical if your local network is unsecure for some reason.

@@ -10,6 +10,7 @@ import argparse
 
 app = FastAPI()
 
+# there's probably a more elegant way
 def getIPaddress():
     import socket
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
