@@ -10,9 +10,18 @@ import argparse
 
 app = FastAPI()
 
+def getIPaddress():
+    import socket
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    ipAddress = s.getsockname()[0]
+    s.close()
+    return ipAddress
+
+
 # parser
 parser = argparse.ArgumentParser(description='starting a proxy pass for automatic1111')
-parser.add_argument('-ip', '--ip', default='192.168.0.1', type=str, help='local ip address')
+parser.add_argument('-ip', '--ip', default=getIPaddress(), type=str, help='local ip address')
 parser.add_argument('-cors', '--cors_origin', type=str, default='https://graemeniedermayer.github.io', help='cors origin')
 parser.add_argument('-b', '--backend', type=str, default="http://127.0.0.1:7860/", help='backend for ')
 

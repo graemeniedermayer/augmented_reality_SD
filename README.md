@@ -38,12 +38,12 @@ web browser should complain about using an inapproriate certificate. Allow the c
 
 `auto1111.html` will contain the default setting. There are going to be a bunch of variants and we'll figure out what works best!
 
-#### do on iOs phone
-to do. mozilla webxr mobile viewer might work for some setups (sort of doubt that depth api or camera access will work)
+#### do on iOS phone
+Todo. mozilla webxr mobile viewer might work for some setups (sort of doubt that depth api or camera access will work)
 
 ### Cloud Backend
 #### google colab
-To do
+Todo.
 
 ## Using extensions
 Many extensions can be very helpful while using augmented reality.
@@ -65,7 +65,7 @@ Because of the limitations of webxr and iOS I'd like to explore creating a iOS a
 Using a fastapi proxy pass for SSL and cross-site origin resources (CORS) headers. If backend has SSL and CORS enabled this is unnecessary. Automatic1111 supports both but I was having trouble with self-signed certificates. I haven't looked into google Colab yet (it might not be necessary).
 
 ### Backend
-So far automatic1111 [put link here] is the only backend. I'd like to look into invokeAI and other possible backends.
+So far [automatic1111](https://github.com/AUTOMATIC1111/stable-diffusion-webui) is the only backend. I'd like to look into invokeAI and other possible backends.
 
 # Known bugs
 * horizontal images does not work.
@@ -74,7 +74,8 @@ So far automatic1111 [put link here] is the only backend. I'd like to look into 
 
 # Useful extensions
 [depthmaps](https://github.com/thygate/stable-diffusion-webui-depthmap-script)
-[background removal]()
+
+[background removal](https://github.com/graemeniedermayer/clothseg)
 
 # Acknowledgements 
 So many.
