@@ -107,9 +107,11 @@ def cert_gen(
         f.write(crypto.dump_certificate(SSL.FILETYPE_PEM, cert))
 
 from pathlib import Path
+import os
 
-my_file = Path("ssl/selfsigned.key")
-if not my_file.is_file():
+cert_path = Path("ssl/selfsigned.key")
+Path("ssl").mkdir(parents=True, exist_ok=True)
+if not cert_path.is_file():
     cert_gen()
 
 app.add_route("/{path:path}",

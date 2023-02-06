@@ -1,5 +1,5 @@
 # Augmented Reality and Stable Diffusion
-A [webapp](https://graemeniedermayer.github.io/augmented_reality_SD/frontend/auto1111.html) Combining augmented reality and stability diffusion through api calls. 
+A [webapp](https://graemeniedermayer.github.io/augmented_reality_SD/frontend/auto1111.html) that combines augmented reality and stability diffusion through api calls. Requires running stable diffusion on a seperate machine.
 
 ## Examples
 [![video](https://img.youtube.com/vi/_ZFlGsJHMhw/0.jpg)](https://youtu.be/_ZFlGsJHMhw)
@@ -17,8 +17,6 @@ launch automatic1111 with api option (currently it's only setup for the 512 mode
 launch proxy pass server from the project root directory.
 
 `python proxy_pass_server.py`
-
-once these two server are running you should be able to go to the [webapp](https://graemeniedermayer.github.io/augmented_reality_SD/frontend/auto1111.html) and start using it immediately. You can also host this webxr app independently.
 
 #### do on android phone
 launch [webapp](https://graemeniedermayer.github.io/augmented_reality_SD/frontend/auto1111.html) in portrait mode (I haven't done all the corrections for landscape mode.)
