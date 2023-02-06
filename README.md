@@ -1,5 +1,5 @@
 # Augmented Reality and Stable Diffusion
-Combining augmented reality and stability diffusion through api calls.
+A (webapp)[https://graemeniedermayer.github.io/augmented_reality_SD/frontend/auto1111.html] Combining augmented reality and stability diffusion through api calls. 
 
 ## Examples
 [![video](https://img.youtube.com/vi/_ZFlGsJHMhw/0.jpg)](https://youtu.be/_ZFlGsJHMhw)
@@ -10,13 +10,15 @@ Combining augmented reality and stability diffusion through api calls.
 #### do on local computer
 `git clone https://github.com/graemeniedermayer/augmented_reality_SD.git`
 
-launch automatic1111 with api option (currently it's only setup of 512 models)
+launch automatic1111 with api option (currently it's only setup for the 512 models)
 
 `python launch.py --xformers --api`
 
 launch proxy pass server from the project root directory.
 
 `python proxy_pass_server.py`
+
+once these two server are running you should be able to go to the (webapp)[https://graemeniedermayer.github.io/augmented_reality_SD/frontend/auto1111.html] and start using it immediately. You can also host this webxr app independently.
 
 ##### optional 
 you may want to remake the ssl keys. This is critical if your local network is unsecure for some reason.
@@ -68,7 +70,7 @@ Using a fastapi proxy pass for SSL and cross-site origin resources (CORS) header
 So far [automatic1111](https://github.com/AUTOMATIC1111/stable-diffusion-webui) is the only backend. I'd like to look into invokeAI and other possible backends.
 
 # Known bugs
-* horizontal images does not work.
+* horizontal images does not work. Resolution changes in general aren't well supported.
 * must double click capture depth (this is a weird error).
 * there is no failure capturing/error capture.
 
