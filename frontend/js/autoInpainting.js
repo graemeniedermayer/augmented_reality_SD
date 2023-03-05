@@ -1,7 +1,10 @@
 // okay so I know global are bad practice but this is experimental oookay?
-let scene, geometry, uniforms, renderer, light, cameraCopy, camera, minSize, image1, camBinding, gl, texture1, viewport, shaderMaterial, scaleGeo, whratio, glBinding, dcamera, ctx, shaderProgram, mesh; 
+let scene, geometry, uniforms, renderer, light, cameraCopy, camera, 
+minSize, image1, camBinding, gl, texture1, viewport, shaderMaterial, 
+scaleGeo, whratio, glBinding, dcamera, ctx, shaderProgram, drawMesh, mesh, lastMask; 
       // XR globals.
-    
+   
+// Honestly contains more magic than code or math
 let canvasSize = {'width':512,'height':1024}
 let origImages = []
 let masks = []
@@ -13,18 +16,118 @@ let xrButton = null;
 let xrRefSpace = null;
 let captureNext = true
 
-// new THREE.raycaster()
+let raycaster = new THREE.Raycaster()
+let mouse = new THREE.Vector2()
+let intersectObjects = []
+let drawCanvas = document.createElement("canvas");
+drawCanvas.height= canvasSize.height
+drawCanvas.width = canvasSize.width
+let drawCtx = drawCanvas.getContext("2d");
+drawCtx.imageSmoothingEnabled = false;
+// document.body.append(drawCanvas)
 
-
-draw= (ctx, pointer)=> {
-    ctx.lineWidth = 3;
-    ctx.fillStyle = '#FFFFFF'
-    ctx.strokeStyle = '#FFFF00';
-    ctx.beginPath();
-    ctx.arc(pointer.x, pointer.y, 20, 0, 2 * Math.PI);
-    ctx.fill();
+function worldToLocal( givenObject, worldVec){
+    localVec = new THREE.Vector3()
+    givenObject.updateMatrixWorld(); 
+	localVec.copy( worldVec )
+	.sub(givenObject.position)
+	.applyQuaternion( givenObject.quaternion.clone().invert() )
+	return {x:localVec.x, y:localVec.y};
+} 
+		
+function raycasterFunction( event) {
+	mouse.x = ( event.clientX / window.innerWidth) * 2 - 1;
+	mouse.y = -( event.clientY / window.innerHeight) * 2 + 1;
+	raycaster.setFromCamera( mouse, camera );
+	let intersects = []
+	intersects = raycaster.intersectObjects( intersectObjects );
+	return [intersects.length > 0 ? intersects[ 0 ]: undefined, raycaster.ray]
 }
 
+TOUCHSTATE = {}
+var onMouseStart = (e)=>{
+	let [obj, ray] = raycasterFunction(e)
+	TOUCHSTATE[ 'mouse' ] = obj
+	if( obj ? (obj.object ? obj.object.type =='Mesh' : false) :false){
+        // obj.object,obj.uv print this
+		clickCanvas(drawCanvas, obj.uv, e.type)
+	}
+}
+var onTouchStart = (e)=>{
+	for( var j = 0; j < e.touches.length; j++ ) {
+		let [obj,ray] = raycasterFunction(e.touches[ j ])
+		if( obj ? (obj.object ? obj.object.type =='Mesh' : false) :false){
+            // obj.object,obj.uv print this
+            console.log(obj.uv)
+			clickCanvas(drawCanvas, obj.uv, e.type)
+		}
+	}
+}
+
+var prevX = 0, currX = 0, prevY = 0, currY = 0;
+
+// non clearing
+function draw() {
+    drawCtx.beginPath();
+    drawCtx.moveTo(prevX, prevY);
+    drawCtx.lineTo(currX, currY);
+    drawCtx.strokeStyle = "#FFFFFF";
+    drawCtx.lineWidth = 20;
+    drawCtx.stroke();
+    drawCtx.closePath();
+    try{
+        let canTexture = new THREE.CanvasTexture(drawCanvas) 
+        drawMesh.material.map = canTexture
+        drawMesh.material = new THREE.MeshStandardMaterial( { 
+            side: 2,
+            map: canTexture,
+            rotation: Math.PI/2,
+            center: new THREE.Vector2(0.5, 0.5),
+            alphaMap: canTexture
+        } )
+        drawMesh.material.needsUpdate = true
+        drawMesh.material.alphaMap.needsUpdate = true
+        drawMesh.material.map.needsUpdate = true
+    }catch(e){
+
+    }
+}
+function drawHandler(res, e) {
+    if (res == 'touchstart' || res == 'mousedown') {
+        prevX = currX;
+        prevY = currY;
+        currX = e.clientX - drawCanvas.offsetLeft;
+        currY = e.clientY - drawCanvas.offsetTop;
+    }
+    if (res == 'touchend' || res=='mouseup'|| res == "mouseout" ||'touchcancel') {
+    }
+    if (res == 'mousemove'|| res == 'touchmove') {
+            prevX = currX;
+            prevY = currY;
+            currX = e.clientX - drawCanvas.offsetLeft;
+            currY = e.clientY - drawCanvas.offsetTop;
+			draw()
+	}
+}
+
+
+function clickCanvas(thisCanvas, point, type) {
+    // get ray
+	let x =  thisCanvas.width*(point.x);
+	let y = thisCanvas.height*(1-point.y);
+	drawHandler(type, {
+		clientX: x,
+		clientY: y
+	})
+}
+
+window.addEventListener( 'mousedown', onMouseStart ,false);
+window.addEventListener( 'mousemove', onMouseStart ,false);
+window.addEventListener( 'mouseup', onMouseStart ,false);
+
+window.addEventListener( 'touchstart', onTouchStart ,false);
+window.addEventListener( 'touchmove', onTouchStart ,false);
+window.addEventListener( 'touchend', onTouchStart ,false);
 
 const getBase64StringFromDataURL = (dataURL) =>
     dataURL.replace('data:', '').replace(/^.+,/, '');
@@ -358,6 +461,8 @@ function onXRFrame(t, frame) {
 			    	vertexShader:  document.getElementById( 'vertexShader' ).textContent,
 			    	fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
 			    } )
+
+                intersectObjects.push(mesh)
 			    
                 cameraCopy = new THREE.Group()
 			    cameraCopy.quaternion.copy(camera.quaternion)
@@ -366,6 +471,34 @@ function onXRFrame(t, frame) {
 			    mesh.position.copy(camera.position)
 			    mesh.rotateZ(3*Math.PI/2)
                 meshs.push(mesh)
+                mesh.visible = false
+                // canvas mess
+
+                // // why because canvas math is magic.
+                // tDrawCtx.translate(canvasSize.height/2, canvasSize.width/2);
+                // tDrawCtx.rotate(Math.PI/2)
+                // tDrawCtx.translate(canvasSize.width/2, -canvasSize.height/2);
+
+                // tDrawCtx.translate( canvasSize.width, canvasSize.height);
+                // tDrawCtx.scale(-2,-0.5);
+                // tDrawCtx.drawImage(myImage, 0, 0);
+
+                drawMesh = new THREE.Mesh( mesh.geometry.clone(), new THREE.ShaderMaterial() );
+	    	    let canTexture = new THREE.CanvasTexture(drawCanvas) 
+                drawMesh.material = new THREE.MeshStandardMaterial( { 
+                    side: 2,
+                    map: canTexture,
+                    rotation: Math.PI/2,
+                    center: new THREE.Vector2(0.5, 0.5),
+                    alphaMap: canTexture
+	    	    } )
+        
+	    	    drawMesh.quaternion.copy(cameraCopy.quaternion)
+	    	    drawMesh.position.copy(cameraCopy.position)
+                drawMesh.position.add(new THREE.Vector3(0, 0, 0.1).applyQuaternion(camera.quaternion))
+                drawMesh.rotateZ(3*Math.PI/2)
+	    	    scene.add( drawMesh );
+
                 // createCanvas...
                 var tempCanvas = document.createElement("canvas"),
                 tCtx = tempCanvas.getContext("2d");
@@ -376,6 +509,14 @@ function onXRFrame(t, frame) {
 			    tCtx.translate(0, canvasSize.height);
 			    tCtx.scale(1,-1);
                 tCtx.drawImage(camCanvas,0,0);
+
+                // this is non-ideal.
+                if (params.horizontal){
+                    tCtx.translate(canvasSize.height/2, canvasSize.width/2);
+                    tCtx.rotate(Math.PI/2)
+                    tCtx.translate(-canvasSize.width/2, -canvasSize.height/2);
+                }
+
                 origImages.push(tempCanvas.toDataURL("image/png"))
 			    // mesh.material.wireframe = true
 			    scene.add( mesh );
@@ -422,7 +563,8 @@ params = {
     width:512,
     height:1024,
     denoising_strength:0.89,
-    scriptname:"remove_bg v0.0.2"
+    // scriptname:"remove_bg v0.0.2"
+    scriptname:''
 }
 // scriptname will cause issues if empty
 guiSystem.add(params,"prompt").onChange(()=>{})
@@ -477,11 +619,28 @@ depth_args ={
 guiSystem.add(obj1,'add').name('capture depth');
 var obj2 = { add:function(){
     let lastOrigImage = origImages[origImages.length - 1]
-    let lastMask = masks[origImages.length - 1]
-	// document.getElementById('channelSubmit').style.display = 'none';
-	// promptName.style.display = 'none';
-    // include datagui...
-    url = 'https://192.168.0.28:443/sdapi/v1/img2img'
+    // Double flip this can be simplified...
+    var tempCanvas = document.createElement("canvas");
+    let tCtx = tempCanvas.getContext("2d");
+
+    tempCanvas.width = canvasSize.width;
+    tempCanvas.height = canvasSize.height;
+
+	tCtx.translate(canvasSize.width, canvasSize.height);
+	tCtx.scale(-1,-1);
+
+    tCtx.translate(canvasSize.height/2, canvasSize.width/2);
+    tCtx.rotate(Math.PI/2)
+    tCtx.translate(canvasSize.width/2, -canvasSize.height/2);
+
+    tCtx.translate( canvasSize.width, canvasSize.height);
+    tCtx.scale(-2,-0.5);
+    tCtx.drawImage(drawCanvas, 0, 0);
+
+    lastMask = tempCanvas.toDataURL("image/png")
+    
+    // Switch for local ip address
+    url = 'https://192.168.0.1:8443/sdapi/v1/img2img'
     dic = {
         "init_images": [lastOrigImage],
         'mask': lastMask,
@@ -496,7 +655,7 @@ var obj2 = { add:function(){
         'width': params.width,
         'height': params.height, 
         'denoising_strength': params.denoising_strength, 
-        'script_name': params.scriptname
+        // 'script_name': params.scriptname,
         'mask_blur': params.mask_blur
     }
 	fetch(url, 
@@ -513,7 +672,7 @@ var obj2 = { add:function(){
     .then((response) => response.json())
     .then((data)=>{
         resData = data
-        dataUrl = `data:text/plain;base64,${data.images[1]}`
+        dataUrl = `data:text/plain;base64,${data.images[0]}`
         const myImage = new Image(canvasSize.width, canvasSize.height);
         myImage.src = dataUrl;
         const canvas = document.querySelector("canvas");
@@ -530,21 +689,18 @@ var obj2 = { add:function(){
             ctx.scale(-2,-0.5);
             ctx.drawImage(myImage, 0, 0);
 
-            if (params.horizontal){
-                tCtx.translate(canvasSize.height/2, canvasSize.width/2);
-                tCtx.rotate(-Math.PI/2)
-                tCtx.translate(-canvasSize.width/2, -canvasSize.height/2);
-            }
-
             imageData = ctx.getImageData(0, 0, canvasSize.width, canvasSize.height);
             mesh.visible = false
+            drawMesh.visible = false
             let mesh1 = new THREE.Mesh( mesh.geometry.clone(), new THREE.ShaderMaterial() );
 	    	let canTexture = new THREE.CanvasTexture(canvas) 
+            // let canTexture = new THREE.CanvasTexture(drawCanvas) 
             mesh1.material = new THREE.MeshStandardMaterial( { 
                 side: 2,
                 map: canTexture,
+                transparent: true,
                 // alpha map uses green channel so this is improper...
-                // alphaMap: canTexture
+                alphaMap:new THREE.CanvasTexture(drawCanvas) 
 	    	} )
         
 	    	mesh1.quaternion.copy(cameraCopy.quaternion)
