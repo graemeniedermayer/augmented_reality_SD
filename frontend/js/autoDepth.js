@@ -414,7 +414,7 @@ depth_args ={
     'inpaint':false, 
     'inpaint_vids':false, 
     'background_removal_model':'u2net',
-    'background_removal':true, 
+    'background_removal':false, 
     'pre_depth_background_removal':false, 
     'save_background_removal_masks':false,
      'gen_normal':false,
