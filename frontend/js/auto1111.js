@@ -376,6 +376,7 @@ params = {
     seed:-1,
     width:512,
     height:1024,
+    horizontal:false,
     denoising_strength:0.89,
     scriptname:"remove_bg v0.0.2"
 }
@@ -433,7 +434,7 @@ var generate = { add:function(){
 	// document.getElementById('channelSubmit').style.display = 'none';
 	// promptName.style.display = 'none';
     // include datagui...
-    url = 'https://192.168.0.1:8443/sdapi/v1/img2img'
+    url = 'https://192.168.0.28:8443/sdapi/v1/img2img'
     dic = {
         "init_images": [lastOrigImage],
         // 'mask': lastMask,
@@ -451,8 +452,9 @@ var generate = { add:function(){
         
         // 'mask_blur': 2
     }
-    if(params.scriptname!=''):
+    if(params.scriptname!=''){
         dic['script_name'] = params.scriptname
+    }
 	fetch(url, 
         {
             method: 'POST',
