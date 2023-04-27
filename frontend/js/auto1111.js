@@ -434,7 +434,7 @@ var generate = { add:function(){
 	// document.getElementById('channelSubmit').style.display = 'none';
 	// promptName.style.display = 'none';
     // include datagui...
-    url = 'https://192.168.0.28:8443/sdapi/v1/img2img'
+    url = 'https://192.168.0.1:8443/sdapi/v1/img2img'
     dic = {
         "init_images": [lastOrigImage],
         // 'mask': lastMask,
