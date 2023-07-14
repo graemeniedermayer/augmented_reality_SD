@@ -368,7 +368,7 @@ let gui = new dat.GUI()
 gui.add({add:()=>{}},'add').name('spacing button')
 let guiSystem = gui.addFolder('api')
 params = {
-    auto1111_url:'https://192.168.0.1:8443/sdapi/v1/img2img',
+    auto1111_url:'https://192.168.0.1:8443',
     prompt:"",
     negative_prompt:"cgi",
     steps:25,
@@ -436,7 +436,7 @@ var generate = { add:function(){
 	// document.getElementById('channelSubmit').style.display = 'none';
 	// promptName.style.display = 'none';
     // include datagui...
-    url = params.auto1111_url
+    url = params.auto1111_url+"/sdapi/v1/img2img"
     dic = {
         "init_images": [lastOrigImage],
         // 'mask': lastMask,
