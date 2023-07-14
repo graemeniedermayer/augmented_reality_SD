@@ -368,6 +368,7 @@ let gui = new dat.GUI()
 gui.add({add:()=>{}},'add').name('spacing button')
 let guiSystem = gui.addFolder('api')
 params = {
+    auto1111_url:'https://192.168.0.1:8443/sdapi/v1/img2img',
     prompt:"",
     negative_prompt:"cgi",
     steps:25,
@@ -381,6 +382,7 @@ params = {
     scriptname:"remove_bg v0.0.2"
 }
 // :"remove_bg v0.0.2"
+guiSystem.add(params,"auto1111_url").onChange(()=>{})
 guiSystem.add(params,"prompt").onChange(()=>{})
 guiSystem.add(params,"negative_prompt").onChange(()=>{})
 guiSystem.add(params,"steps",0, 50).onChange(()=>{})
@@ -434,7 +436,7 @@ var generate = { add:function(){
 	// document.getElementById('channelSubmit').style.display = 'none';
 	// promptName.style.display = 'none';
     // include datagui...
-    url = 'https://192.168.0.1:8443/sdapi/v1/img2img'
+    url = params.auto1111_url
     dic = {
         "init_images": [lastOrigImage],
         // 'mask': lastMask,
