@@ -111,14 +111,21 @@ function AR(){
 	}
 	if ( currentSession === null ) {
 
-        let options = {
-          requiredFeatures: ['depth-sensing', 'dom-overlay', 'camera-access'],
-          domOverlay: { root: document.body },
-		  depthSensing: {
-		    usagePreference: [ "cpu-optimized"],
-		    dataFormatPreference: ["luminance-alpha"]
-		  }
-        };
+       if( navigator.userAgent.includes('Quest 3') ){
+        		options = {
+         			requiredFeatures: ['depth-sensing', 'dom-overlay', 'camera-access'],
+          			domOverlay: { root: document.body },
+		  		depthSensing: {
+		    			usagePreference: [ "cpu-optimized"],
+		    			dataFormatPreference: ["luminance-alpha"]
+		  		}
+        		};
+	}else{
+        		options = {
+         			requiredFeatures: ['depth-sensing', 'camera-access'],
+          			domOverlay: { root: document.body }
+        		};
+	}
 		var sessionInit = getXRSessionInit( 'immersive-ar', {
 			mode: 'immersive-ar',
 			referenceSpaceType: 'local', // 'local-floor'
