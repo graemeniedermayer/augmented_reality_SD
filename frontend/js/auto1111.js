@@ -122,8 +122,7 @@ function AR(){
         		};
 	}else{
         		options = {
-         			requiredFeatures: ['depth-sensing', 'camera-access'],
-          			domOverlay: { root: document.body }
+         			requiredFeatures: ['depth-sensing']
         		};
 	}
 		var sessionInit = getXRSessionInit( 'immersive-ar', {
